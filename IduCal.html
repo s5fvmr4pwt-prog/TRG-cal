@@ -1,120 +1,124 @@
+
+
+Iducal · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>G2B → Calendar</title>
+<title>TRG → Calendar</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --border: #1e1e2e;
-    --accent: #7c6af7;
-    --accent2: #4fc3f7;
-    --text: #e8e8f0;
-    --muted: #5a5a72;
-    --success: #4ade80;
-    --error: #f87171;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 3rem 1.5rem;
-  }
-  body::before {
-    content: ''; position: fixed; top: -30%; left: -20%; width: 60%; height: 60%;
-    background: radial-gradient(ellipse, rgba(124,106,247,0.12) 0%, transparent 70%); pointer-events: none;
-  }
-  .container { width: 100%; max-width: 580px; position: relative; z-index: 1; }
-  .badge { display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(124,106,247,0.3); padding: 0.25rem 0.75rem; border-radius: 2px; margin-bottom: 1.5rem; }
-  h1 { font-family: 'Space Mono', monospace; font-size: 2.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 0.5rem; }
-  h1 span { color: var(--accent); }
-  .subtitle { color: var(--muted); font-size: 0.88rem; font-weight: 300; margin-bottom: 2.5rem; line-height: 1.7; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1rem; }
-  .card-title { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
-  .step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
-  .step-num { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--accent); background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.25); border-radius: 3px; padding: 0.2rem 0.45rem; min-width: 2rem; text-align: center; margin-top: 0.1rem; flex-shrink: 0; }
-  .step-text { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
-  .step-text strong { color: var(--text); }
-  .step-text a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(124,106,247,0.3); }
-
-  /* Week selector */
-  .week-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
-  .week-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 0.75rem; border-radius: 5px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease; text-align: left; }
-  .week-btn:hover { border-color: var(--accent); color: var(--text); }
-  .week-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.1); color: var(--text); }
-  .week-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .week-btn .wdate { display: block; font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--accent); margin-top: 0.2rem; }
-
-  /* Toggle buttons */
-  .toggle-group { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 0.4rem 0.85rem; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
-  .toggle-btn:hover { border-color: var(--accent); color: var(--text); }
-  .toggle-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.15); color: var(--text); }
-
-
-  /* Script boxes */
-  .script-box { position: relative; margin-top: 0.65rem; }
-  .script-box textarea { width: 100%; background: #0d0d14; border: 1px solid var(--border); border-radius: 5px; color: var(--accent2); font-family: 'Space Mono', monospace; font-size: 0.68rem; padding: 0.75rem 3.5rem 0.75rem 0.75rem; resize: none; outline: none; line-height: 1.55; overflow-wrap: break-word; word-break: break-all; }
-  .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.3); color: var(--accent); font-family: 'Space Mono', monospace; font-size: 0.6rem; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
-  .copy-btn:hover { background: rgba(124,106,247,0.3); }
-  .copy-btn.copied { color: var(--success); border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.1); }
-
-  /* Paste area */
-  .paste-area { width: 100%; background: #0d0d14; border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-family: 'Space Mono', monospace; font-size: 0.72rem; padding: 0.85rem; resize: vertical; min-height: 130px; outline: none; transition: border-color 0.15s; line-height: 1.5; }
-  .paste-area:focus { border-color: var(--accent); }
-  .paste-area::placeholder { color: var(--muted); }
-
-  /* Buttons */
-  .btn { width: 100%; padding: 0.85rem 1.5rem; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s ease; margin-top: 0.75rem; border: none; display: block; }
-  .btn-primary { background: var(--accent); color: white; }
-  .btn-primary:hover { background: #9580ff; transform: translateY(-1px); }
-  .btn-success { background: transparent; border: 1px solid var(--success); color: var(--success); display: none; }
-  .btn-success:hover { background: rgba(74,222,128,0.08); }
-
-  /* Status */
-  .status { margin-top: 0.75rem; padding: 0.7rem 1rem; border-radius: 5px; font-size: 0.82rem; display: none; line-height: 1.5; }
-  .status.success { display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: var(--success); }
-  .status.error { display: block; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--error); }
-
-  /* Preview */
-  .preview { display: none; margin-top: 1.25rem; }
-  .day-group { margin-bottom: 1rem; }
-  .day-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
-  .lesson-row { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.38rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.83rem; }
-  .lesson-time { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--muted); min-width: 108px; flex-shrink: 0; }
-  .lesson-name { color: var(--text); flex: 1; }
-  .lesson-meta { font-size: 0.7rem; color: var(--muted); font-style: italic; }
-
-  /* How-to */
-  .how-to { margin-top: 1.5rem; }
-  .how-to summary { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); cursor: pointer; padding: 0.5rem 0; user-select: none; }
-  .how-to summary:hover { color: var(--text); }
-  .how-to-content { margin-top: 0.75rem; }
-  .hstep { display: flex; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 0.83rem; color: var(--muted); line-height: 1.6; align-items: flex-start; }
-  .hstep-label { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--accent); background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.2); padding: 0.15rem 0.4rem; border-radius: 3px; white-space: nowrap; margin-top: 0.1rem; flex-shrink: 0; }
-  .hstep strong { color: var(--text); }
-
-  .pref-row { margin-bottom: 1rem; }
-  .pref-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
-
-  footer { margin-top: 3rem; font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; text-align: center; line-height: 2; }
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --border: #1e1e2e;
+  --accent: #7c6af7;
+  --accent2: #4fc3f7;
+  --text: #e8e8f0;
+  --muted: #5a5a72;
+  --success: #4ade80;
+  --error: #f87171;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 3rem 1.5rem;
+}
+body::before {
+  content: ''; position: fixed; top: -30%; left: -20%; width: 60%; height: 60%;
+  background: radial-gradient(ellipse, rgba(124,106,247,0.12) 0%, transparent 70%); pointer-events: none;
+}
+.container { width: 100%; max-width: 580px; position: relative; z-index: 1; }
+.badge { display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(124,106,247,0.3); padding: 0.25rem 0.75rem; border-radius: 2px; margin-bottom: 1.5rem; }
+h1 { font-family: 'Space Mono', monospace; font-size: 2.2rem; font-weight: 700; line-height: 1.1; margin-bottom: 0.5rem; }
+h1 span { color: var(--accent); }
+.subtitle { color: var(--muted); font-size: 0.88rem; font-weight: 300; margin-bottom: 2.5rem; line-height: 1.7; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1rem; }
+.card-title { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
+.step-block { display: flex; gap: 1rem; margin-bottom: 1.1rem; align-items: flex-start; }
+.step-num { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--accent); background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.25); border-radius: 3px; padding: 0.2rem 0.45rem; min-width: 2rem; text-align: center; margin-top: 0.1rem; flex-shrink: 0; }
+.step-text { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+.step-text strong { color: var(--text); }
+.step-text a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(124,106,247,0.3); }
+ 
+/* Week selector */
+.week-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
+.week-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 0.75rem; border-radius: 5px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease; text-align: left; }
+.week-btn:hover { border-color: var(--accent); color: var(--text); }
+.week-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.1); color: var(--text); }
+.week-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.week-btn .wdate { display: block; font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--accent); margin-top: 0.2rem; }
+ 
+/* Toggle buttons */
+.toggle-group { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 0.4rem 0.85rem; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.toggle-btn:hover { border-color: var(--accent); color: var(--text); }
+.toggle-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.15); color: var(--text); }
+ 
+/* Script boxes */
+.script-box { position: relative; margin-top: 0.65rem; }
+.script-box textarea { width: 100%; background: #0d0d14; border: 1px solid var(--border); border-radius: 5px; color: var(--accent2); font-family: 'Space Mono', monospace; font-size: 0.68rem; padding: 0.75rem 3.5rem 0.75rem 0.75rem; resize: none; outline: none; line-height: 1.55; overflow-wrap: break-word; word-break: break-all; }
+.copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.3); color: var(--accent); font-family: 'Space Mono', monospace; font-size: 0.6rem; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { background: rgba(124,106,247,0.3); }
+.copy-btn.copied { color: var(--success); border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.1); }
+ 
+/* Paste area */
+.paste-area { width: 100%; background: #0d0d14; border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-family: 'Space Mono', monospace; font-size: 0.72rem; padding: 0.85rem; resize: vertical; min-height: 130px; outline: none; transition: border-color 0.15s; line-height: 1.5; }
+.paste-area:focus { border-color: var(--accent); }
+.paste-area::placeholder { color: var(--muted); }
+ 
+/* Buttons */
+.btn { width: 100%; padding: 0.85rem 1.5rem; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s ease; margin-top: 0.75rem; border: none; display: block; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #9580ff; transform: translateY(-1px); }
+.btn-success { background: transparent; border: 1px solid var(--success); color: var(--success); display: none; }
+.btn-success:hover { background: rgba(74,222,128,0.08); }
+ 
+/* Status */
+.status { margin-top: 0.75rem; padding: 0.7rem 1rem; border-radius: 5px; font-size: 0.82rem; display: none; line-height: 1.5; }
+.status.success { display: block; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: var(--success); }
+.status.error { display: block; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--error); }
+ 
+/* Preview */
+.preview { display: none; margin-top: 1.25rem; }
+.day-group { margin-bottom: 1rem; }
+.day-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+.lesson-row { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.38rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.83rem; }
+.lesson-time { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--muted); min-width: 108px; flex-shrink: 0; }
+.lesson-name { color: var(--text); flex: 1; }
+.lesson-meta { font-size: 0.7rem; color: var(--muted); font-style: italic; }
+ 
+/* How-to */
+.how-to { margin-top: 1.5rem; }
+.how-to summary { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); cursor: pointer; padding: 0.5rem 0; user-select: none; }
+.how-to summary:hover { color: var(--text); }
+.how-to-content { margin-top: 0.75rem; }
+.hstep { display: flex; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 0.83rem; color: var(--muted); line-height: 1.6; align-items: flex-start; }
+.hstep-label { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--accent); background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.2); padding: 0.15rem 0.4rem; border-radius: 3px; white-space: nowrap; margin-top: 0.1rem; flex-shrink: 0; }
+.hstep strong { color: var(--text); }
+ 
+.pref-row { margin-bottom: 1rem; }
+.pref-row:last-child { margin-bottom: 0; }
+.pref-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
+ 
+footer { margin-top: 3rem; font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; text-align: center; line-height: 2; }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="badge">TORG · EduPage · G2B</div>
-  <h1>G<span>2</span>B<br>Calendar</h1>
-  <p class="subtitle">Your personal G2B timetable exporter.</p>
-
+ 
+  <div class="badge" id="badgeText">TORG · EduPage · G2B</div>
+  <h1 id="mainTitle">G<span>2</span>B<br>Calendar</h1>
+  <p class="subtitle" id="subtitleText">Your personal G2B timetable exporter.</p>
+ 
   <!-- STEP 1: Week -->
   <div class="card">
     <div class="card-title">Step 1 — Pick a week</div>
     <div class="week-selector" id="weekSelector"></div>
   </div>
-
+ 
   <!-- STEP 1b: Groups -->
   <div class="card">
     <div class="card-title">Step 1b — Your groups</div>
@@ -137,22 +141,29 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- STEP 1c: Class -->
   <div class="card">
     <div class="card-title">Step 1c — Your class</div>
     <div class="pref-row">
+      <div class="pref-label">Year</div>
+      <div class="toggle-group" id="yearGroup">
+        <button class="toggle-btn active" data-val="G2" onclick="setToggle('yearGroup', this)">G2</button>
+        <button class="toggle-btn" data-val="G3" onclick="setToggle('yearGroup', this)">G3</button>
+      </div>
+    </div>
+    <div class="pref-row">
       <div class="pref-label">Class</div>
-      <div class="toggle-group" id="classGroup">
-        <button class="toggle-btn" data-val="-22" onclick="setToggle('classGroup', this)">G2A</button>
-        <button class="toggle-btn active" data-val="-23" onclick="setToggle('classGroup', this)">G2B</button>
-        <button class="toggle-btn" data-val="-24" onclick="setToggle('classGroup', this)">G2C</button>
-        <button class="toggle-btn" data-val="-25" onclick="setToggle('classGroup', this)">G2D</button>
-        <button class="toggle-btn" data-val="-26" onclick="setToggle('classGroup', this)">G2E</button>
+      <div class="toggle-group" id="letterGroup">
+        <button class="toggle-btn" data-val="A" onclick="setToggle('letterGroup', this)">G2A</button>
+        <button class="toggle-btn active" data-val="B" onclick="setToggle('letterGroup', this)">G2B</button>
+        <button class="toggle-btn" data-val="C" onclick="setToggle('letterGroup', this)">G2C</button>
+        <button class="toggle-btn" data-val="D" onclick="setToggle('letterGroup', this)">G2D</button>
+        <button class="toggle-btn" data-val="E" onclick="setToggle('letterGroup', this)">G2E</button>
       </div>
     </div>
   </div>
-
+ 
   <!-- STEP 2: Console -->
   <div class="card">
     <div class="card-title">Step 2 — Run this on the EduPage site</div>
@@ -178,13 +189,13 @@
       <span class="step-num">04</span>
       <div class="step-text">After <strong>DONE!</strong> appears, run:
         <div class="script-box" style="margin-top:0.5rem;">
-          <textarea readonly rows="1" style="padding:0.6rem 3.5rem 0.6rem 0.75rem;">copy(JSON.stringify(window._g2b))</textarea>
-          <button class="copy-btn" onclick="navigator.clipboard.writeText('copy(JSON.stringify(window._g2b))');this.textContent='COPIED!';this.classList.add('copied');setTimeout(()=>{this.textContent='COPY';this.classList.remove('copied')},2000)">COPY</button>
+          <textarea readonly rows="1" style="padding:0.6rem 3.5rem 0.6rem 0.75rem;">copy(JSON.stringify(window._trg))</textarea>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('copy(JSON.stringify(window._trg))');this.textContent='COPIED!';this.classList.add('copied');setTimeout(()=>{this.textContent='COPY';this.classList.remove('copied')},2000)">COPY</button>
         </div>
       </div>
     </div>
   </div>
-
+ 
   <!-- STEP 3: Single week -->
   <div class="card" id="step3card">
     <div class="card-title">Step 3 — Paste &amp; download</div>
@@ -192,10 +203,9 @@
     <button class="btn btn-primary" onclick="convertSingle()">Convert to .ics</button>
     <div class="status" id="status1"></div>
     <div class="preview" id="preview1"></div>
-    <button class="btn btn-success" id="downloadBtn1" onclick="downloadICS(icsData1, 'g2b-timetable.ics')">&#11015; Download g2b-timetable.ics</button>
+    <button class="btn btn-success" id="downloadBtn1" onclick="downloadICS(icsData1, icsFileName())">&#11015; Download g2b-timetable.ics</button>
   </div>
-  </div>
-
+ 
   <details class="how-to">
     <summary>How to import into your calendar app</summary>
     <div class="how-to-content">
@@ -205,75 +215,82 @@
       <div class="hstep"><span class="hstep-label">Note</span><span>One-time import — repeat each week for updated lessons.</span></div>
     </div>
   </details>
-
-  <footer>tallinna tõnismäe riigigümnaasium · g2b · unofficial tool<br>data fetched from edupage — never stored</footer>
+ 
+  <footer>tallinna tõnismäe riigigümnaasium · <span id="footerCls">g2b</span> · unofficial tool<br>data fetched from edupage — never stored</footer>
+ 
 </div>
-
+ 
 <script>
+// ── Classes ───────────────────────────────────────────────────────────────────
+// EduPage class IDs. Add new year groups here and they appear in the picker.
+const CLASS_IDS = {
+  'G2': { A: '-22', B: '-23', C: '-24', D: '-25', E: '-26' },
+  'G3': { A: '-43', B: '-44', C: '-45', D: '-46', E: '-47' },
+};
+ 
 // ── Data ──────────────────────────────────────────────────────────────────────
-
 const SUBJECTS = {
-  '-1':   'Math',
-  '-4':   'English',
-  '-5':   'French',
-  '-6':   'Spanish',
-  '-7':   'German',
-  '-18':  'Arts',
-  '-21':  'Biology',
-  '-22':  'Physics',
-  '-25':  'Chemistry',
-  '-29':  'Swedish',
-  '-32':  'Russian',
-  '-41':  'Finnish',
+  '-1': 'Math',
+  '-4': 'English',
+  '-5': 'French',
+  '-6': 'Spanish',
+  '-7': 'German',
+  '-18': 'Arts',
+  '-21': 'Biology',
+  '-22': 'Physics',
+  '-25': 'Chemistry',
+  '-29': 'Swedish',
+  '-32': 'Russian',
+  '-41': 'Finnish',
   '-141': 'Literature',
   '-142': 'Music',
   '-174': 'Estonian',
-  '-16':  'Kaasamõtlemine',
+  '-16': 'Kaasamõtlemine',
 };
-
+ 
 const TEACHERS = {
-  '-1':   'Veronika Grigorjev',
-  '-3':   'Liis Lindvest',
-  '-5':   'Liis Gross',
-  '-8':   'Kristiina Sirkel',
-  '-11':  'Kristin Pintson',
-  '-13':  'Lisbet Niinepuu',
-  '-15':  'Ilona Kroon',
-  '-16':  'Ilona Käsk',
-  '-19':  'Eve Teder',
-  '-24':  'Kaarel Aadli',
-  '-28':  'Neeme Lumi',
-  '-52':  'Janeli Tasa',
-  '-53':  'Maria Kurisoo',
-  '-56':  'Marie Alamaa',
-  '-58':  'Kristjan Haljak',
-  '-59':  'Vladislav Jekimtsev',
-  '-62':  'Kirstin Karis',
-  '-63':  'Kristi Kensap',
-  '-64':  'Kalju Karl Kivi',
-  '-65':  'Anna-Liisa Kree',
-  '-67':  'Iti-Kärt Lehtmets',
-  '-69':  'Uliana Momot',
-  '-70':  'Pille-Riin Määr',
-  '-73':  'Kristi Vaino',
-  '-75':  'Kai Yallop',
-  '-76':  'Kärt Tomp',
-  '-77':  'Mari Raamat',
-  '-78':  'Talvi Raamat',
-  '-79':  'Minni Hein',
-  '-83':  'Katariina Linde',
-  '-84':  'Kristjan Jagomägi',
-  '-86':  'Mart Kask',
-  '-87':  'Nadežda Lesik',
-  '-88':  'Tatjana Mette',
-  '-89':  'Iiris Niitsoo',
-  '-90':  'Heike Olmre',
-  '-91':  'Heleriin Paeoja',
-  '-94':  'Aarne-Viktor Raudsik',
-  '-95':  'Georgina Ristoja',
-  '-97':  'Gunnar Salumäe',
-  '-98':  'Tuuli Tappo',
-  '-99':  'Kristi Teder',
+  '-1': 'Veronika Grigorjev',
+  '-3': 'Liis Lindvest',
+  '-5': 'Liis Gross',
+  '-8': 'Kristiina Sirkel',
+  '-11': 'Kristin Pintson',
+  '-13': 'Lisbet Niinepuu',
+  '-15': 'Ilona Kroon',
+  '-16': 'Ilona Käsk',
+  '-19': 'Eve Teder',
+  '-24': 'Kaarel Aadli',
+  '-28': 'Neeme Lumi',
+  '-52': 'Janeli Tasa',
+  '-53': 'Maria Kurisoo',
+  '-56': 'Marie Alamaa',
+  '-58': 'Kristjan Haljak',
+  '-59': 'Vladislav Jekimtsev',
+  '-62': 'Kirstin Karis',
+  '-63': 'Kristi Kensap',
+  '-64': 'Kalju Karl Kivi',
+  '-65': 'Anna-Liisa Kree',
+  '-67': 'Iti-Kärt Lehtmets',
+  '-69': 'Uliana Momot',
+  '-70': 'Pille-Riin Määr',
+  '-73': 'Kristi Vaino',
+  '-75': 'Kai Yallop',
+  '-76': 'Kärt Tomp',
+  '-77': 'Mari Raamat',
+  '-78': 'Talvi Raamat',
+  '-79': 'Minni Hein',
+  '-83': 'Katariina Linde',
+  '-84': 'Kristjan Jagomägi',
+  '-86': 'Mart Kask',
+  '-87': 'Nadežda Lesik',
+  '-88': 'Tatjana Mette',
+  '-89': 'Iiris Niitsoo',
+  '-90': 'Heike Olmre',
+  '-91': 'Heleriin Paeoja',
+  '-94': 'Aarne-Viktor Raudsik',
+  '-95': 'Georgina Ristoja',
+  '-97': 'Gunnar Salumäe',
+  '-98': 'Tuuli Tappo',
+  '-99': 'Kristi Teder',
   '-100': 'Jüri Tõnisma',
   '-101': 'Jane Varik',
   '-104': 'Elena Kheinlaid',
@@ -289,7 +306,7 @@ const TEACHERS = {
   '-119': 'Anneli Riisalu',
   '-120': 'Laura Lang',
 };
-
+ 
 const CLASSROOMS = {
   '-67': '103',
   '-68': '203',
@@ -304,43 +321,60 @@ const CLASSROOMS = {
   '-83': 'L217 VK',
   '-91': 'L204 VK',
 };
-
+ 
 const ALL_LANGS = new Set(['-5', '-41', '-7', '-6', '-32', '-29']);
-
+ 
 // ── Prefs ─────────────────────────────────────────────────────────────────────
-
 function setToggle(groupId, btn) {
   document.querySelectorAll('#' + groupId + ' .toggle-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (groupId === 'classGroup') updateScript();
+  if (groupId === 'yearGroup' || groupId === 'letterGroup') {
+    updateScript();
+    updateBranding();
+  }
 }
-
+ 
 function getPrefs() {
   const engBtn = document.querySelector('#engGroup .toggle-btn.active');
   const langBtn = document.querySelector('#langGroup .toggle-btn.active');
-  const classBtn = document.querySelector('#classGroup .toggle-btn.active');
+  const yearBtn = document.querySelector('#yearGroup .toggle-btn.active');
+  const letterBtn = document.querySelector('#letterGroup .toggle-btn.active');
+  const year = yearBtn ? yearBtn.dataset.val : 'G2';
+  const letter = letterBtn ? letterBtn.dataset.val : 'B';
   return {
     engGroup: engBtn ? engBtn.dataset.val : '1',
     lang: langBtn ? langBtn.dataset.val : '-5',
-    classId: classBtn ? classBtn.dataset.val : '-23'
+    year: year,
+    letter: letter,
+    className: year + letter,
+    classId: (CLASS_IDS[year] && CLASS_IDS[year][letter]) || '-23'
   };
 }
-
-// Classes that should NOT appear for French (G2A, G2C, G2E)
-const FRENCH_EXCLUDE_CLASSES = new Set(['-22', '-24', '-26']);
-
+ 
+// Shared French lessons: for a given class, drop lessons that are also taught to
+// these classes (i.e. the French group you are NOT in). Keyed by your class ID.
+// Only fill in an entry if you know your class shares a French slot incorrectly.
+const FRENCH_EXCLUDE = {
+  '-23': new Set(['-22', '-24', '-26']), // G2B: not the A/C/E group
+};
+ 
 function shouldKeep(item) {
   const sid = item.subjectid;
   const prefs = getPrefs();
+ 
   if (ALL_LANGS.has(sid)) {
     if (sid !== prefs.lang) return false;
-    // For French, exclude lessons shared with G2A, G2C, G2E
+    // For French, drop lessons shared with the other group's classes
     if (sid === '-5') {
-      const ids = item.classids || [];
-      if (ids.some(id => FRENCH_EXCLUDE_CLASSES.has(id))) return false;
+      const exclude = FRENCH_EXCLUDE[prefs.classId];
+      if (exclude) {
+        const ids = item.classids || [];
+        if (ids.some(id => exclude.has(id))) return false;
+      }
     }
     return true;
   }
+ 
   if (sid === '-4') {
     const grp = (item.groupnames && item.groupnames[0]) ? item.groupnames[0] : '';
     if (prefs.engGroup === '1' && /grupp\s*2|^2$/i.test(grp)) return false;
@@ -348,37 +382,55 @@ function shouldKeep(item) {
   }
   return true;
 }
-
+ 
 // Fix incorrect period times from EduPage
 const TIME_FIXES = {
   '12:10': { start: '11:40', end: '12:50' },
   '13:30': { start: '13:30', end: '14:40' },
   '14:50': { start: '14:50', end: '16:00' },
 };
-
+ 
 function fixTimes(item) {
   const fix = TIME_FIXES[item.starttime];
   if (!fix) return item;
   return Object.assign({}, item, { starttime: fix.start, endtime: fix.end });
 }
-
+ 
 function getSubjectName(item) {
   return SUBJECTS[item.subjectid] || 'Lesson ' + item.subjectid;
 }
-
+ 
 function getClassroom(item) {
   if (!item.classroomids || item.classroomids.length === 0) return '';
   return CLASSROOMS[item.classroomids[0]] || '';
 }
-
+ 
 function getTeachers(item) {
   if (item.subjectid === '-16') return '';
   if (!item.teacherids || item.teacherids.length === 0) return '';
   return item.teacherids.map(id => TEACHERS[id] || '').filter(Boolean).join(', ');
 }
-
+ 
+// ── Branding ──────────────────────────────────────────────────────────────────
+function icsFileName() {
+  return getPrefs().className.toLowerCase() + '-timetable.ics';
+}
+ 
+function updateBranding() {
+  const p = getPrefs();
+  const cls = p.className;
+  document.title = cls + ' → Calendar';
+  document.getElementById('badgeText').textContent = 'TORG · EduPage · ' + cls;
+  document.getElementById('mainTitle').innerHTML = 'G<span>' + p.year.slice(1) + '</span>' + p.letter + '<br>Calendar';
+  document.getElementById('subtitleText').textContent = 'Your personal ' + cls + ' timetable exporter.';
+  document.getElementById('footerCls').textContent = cls.toLowerCase();
+  document.getElementById('downloadBtn1').innerHTML = '&#11015; Download ' + icsFileName();
+  document.querySelectorAll('#letterGroup .toggle-btn').forEach(b => {
+    b.textContent = p.year + b.dataset.val;
+  });
+}
+ 
 // ── Week helpers ──────────────────────────────────────────────────────────────
-
 function getWeekBounds(offset) {
   const today = new Date();
   const day = today.getDay();
@@ -389,12 +441,22 @@ function getWeekBounds(offset) {
   sun.setDate(mon.getDate() + 6);
   return { mon, sun };
 }
-
-function fmt(d) { return d.toISOString().split('T')[0]; }
+ 
+function fmt(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
 function fmtDisplay(d) { return d.toLocaleDateString('et-EE', { day: 'numeric', month: 'short' }); }
-
+ 
+// School year the EduPage API expects (starts in August)
+function getSchoolYear() {
+  const d = new Date();
+  return d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+}
+ 
 // ── Week selector ─────────────────────────────────────────────────────────────
-
 const weekSel = document.getElementById('weekSelector');
 for (let i = 0; i < 4; i++) {
   const { mon, sun } = getWeekBounds(i);
@@ -412,29 +474,25 @@ for (let i = 0; i < 4; i++) {
   };
   weekSel.appendChild(btn);
 }
-
+ 
 function getSelectedWeek() {
   const a = document.querySelector('.week-btn.active');
   return a ? { from: a.dataset.from, to: a.dataset.to } : getWeekBounds(0);
 }
-
-// ── 4-week toggle ─────────────────────────────────────────────────────────────
-
-
+ 
 // ── Script builders ───────────────────────────────────────────────────────────
-
 function buildFetchBody(from, to) {
   const classId = getPrefs().classId;
   return JSON.stringify({
-    __args: [null, { year: 2025, datefrom: from, dateto: to, table: 'classes', id: classId, showColors: true, showIgroupsInClasses: false, showOrig: true, log_module: 'CurrentTTView' }],
+    __args: [null, { year: getSchoolYear(), datefrom: from, dateto: to, table: 'classes', id: classId, showColors: true, showIgroupsInClasses: false, showOrig: true, log_module: 'CurrentTTView' }],
     __gsh: '00000000'
   });
 }
-
+ 
 function buildScript(from, to) {
-  return `fetch("/timetable/server/currenttt.js?__func=curentttGetData",{method:"POST",headers:{"Content-Type":"application/json;charset=utf-8"},body:'${buildFetchBody(from, to)}'}).then(r=>r.json()).then(d=>{window._g2b=d;console.log("DONE!")})`;
+  return `fetch("/timetable/server/currenttt.js?__func=curentttGetData",{method:"POST",headers:{"Content-Type":"application/json;charset=utf-8"},body:'${buildFetchBody(from, to)}'}).then(r=>r.json()).then(d=>{window._trg=d;console.log("DONE!")})`;
 }
-
+ 
 function updateScript() {
   const { from, to } = getSelectedWeek();
   const el = document.getElementById('scriptText');
@@ -442,7 +500,7 @@ function updateScript() {
   el.style.height = 'auto';
   el.style.height = (el.scrollHeight + 4) + 'px';
 }
-
+ 
 function copyScript() {
   const text = document.getElementById('scriptText').value;
   navigator.clipboard.writeText(text).then(() => {
@@ -451,38 +509,41 @@ function copyScript() {
     setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
   });
 }
-
+ 
 updateScript();
-
+updateBranding();
+ 
 // ── Convert & ICS ─────────────────────────────────────────────────────────────
-
 let icsData1 = null;
-
+ 
 function convertSingle() {
   const raw = document.getElementById('jsonInput').value.trim();
   const json = parseJSON(raw, 'status1'); if (!json) return;
   if (json.reload) { showStatus('status1', 'error', '{"reload":true} — make sure the timetable is loaded before running the command.'); return; }
   if (!json.r || !json.r.ttitems) { showStatus('status1', 'error', 'Unexpected format. Run the console command again.'); return; }
+ 
   const items = json.r.ttitems.filter(i => i.type === 'card' && shouldKeep(i)).map(fixTimes);
   if (!items.length) { showStatus('status1', 'error', 'No lessons found. The week may be empty or a holiday.'); return; }
+ 
   showStatus('status1', 'success', '✓ Found ' + items.length + ' lessons — ready to download!');
   renderPreview(items, 'preview1');
-  icsData1 = buildICS(items, 'G2B Timetable');
+  icsData1 = buildICS(items, getPrefs().className + ' Timetable');
   document.getElementById('downloadBtn1').style.display = 'block';
   setTimeout(() => document.getElementById('downloadBtn1').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 }
-
+ 
 function parseJSON(raw, statusId) {
   if (!raw) { showStatus(statusId, 'error', 'Please paste the JSON data first.'); return null; }
   try { return JSON.parse(raw); }
   catch(e) { showStatus(statusId, 'error', 'Could not parse — make sure you copied the full output.'); return null; }
 }
-
+ 
 function renderPreview(items, previewId) {
   const preview = document.getElementById(previewId);
   preview.style.display = 'block'; preview.innerHTML = '';
   const byDate = {};
   items.forEach(item => { if (!byDate[item.date]) byDate[item.date] = []; byDate[item.date].push(item); });
+ 
   for (const [date, lessons] of Object.entries(byDate).sort()) {
     const d = new Date(date + 'T12:00:00');
     const dayName = d.toLocaleDateString('et-EE', { weekday: 'long', day: 'numeric', month: 'short' });
@@ -500,23 +561,24 @@ function renderPreview(items, previewId) {
     preview.appendChild(group);
   }
 }
-
+ 
 function toICSDate(dateStr, timeStr) {
   const [y, mo, d] = dateStr.split('-'); const [h, mi] = timeStr.split(':');
   return y + mo + d + 'T' + h + mi + '00';
 }
-
+ 
 function esc(str) {
   return str.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 }
-
+ 
 function buildICS(items, calName) {
   const CRLF = '\r\n';
+  const cls = getPrefs().className;
+  const uidPrefix = cls.toLowerCase();
   let out = '';
-
   out += 'BEGIN:VCALENDAR' + CRLF;
   out += 'VERSION:2.0' + CRLF;
-  out += 'PRODID:-//G2B TORG//ET' + CRLF;
+  out += 'PRODID:-//' + cls + ' TORG//ET' + CRLF;
   out += 'CALSCALE:GREGORIAN' + CRLF;
   out += 'METHOD:PUBLISH' + CRLF;
   out += 'X-WR-CALNAME:' + calName + CRLF;
@@ -538,20 +600,19 @@ function buildICS(items, calName) {
   out += 'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3' + CRLF;
   out += 'END:DAYLIGHT' + CRLF;
   out += 'END:VTIMEZONE' + CRLF;
-
+ 
   items.forEach(function(item, i) {
     const name = getSubjectName(item);
     const grp = (item.groupnames && item.groupnames[0]) ? ' (' + item.groupnames[0] + ')' : '';
     const room = '';
     const teacher = getTeachers(item);
     const summary = name + grp + room;
-    const desc = teacher ? teacher : 'G2B';
-
+    const desc = teacher ? teacher : cls;
     const dtstart = toICSDate(item.date, item.starttime);
     const dtend = toICSDate(item.date, item.endtime);
-    const uid = 'g2b' + item.date.replace(/-/g,'') + 'T' + item.starttime.replace(':','') + item.subjectid.replace('-','S') + 'T' + (item.teacherids && item.teacherids[0] ? item.teacherids[0].replace('-','') : i) + '@torg';
+    const uid = uidPrefix + item.date.replace(/-/g,'') + 'T' + item.starttime.replace(':','') + item.subjectid.replace('-','S') + 'T' + (item.teacherids && item.teacherids[0] ? item.teacherids[0].replace('-','') : i) + '@torg';
     const dtstamp = new Date().toISOString().replace(/[-:.]/g,'').slice(0,15) + 'Z';
-
+ 
     out += 'BEGIN:VEVENT' + CRLF;
     out += 'UID:' + uid + CRLF;
     out += 'DTSTAMP:' + dtstamp + CRLF;
@@ -562,11 +623,11 @@ function buildICS(items, calName) {
     if (getClassroom(item)) out += 'LOCATION:' + esc(getClassroom(item)) + CRLF;
     out += 'END:VEVENT' + CRLF;
   });
-
+ 
   out += 'END:VCALENDAR' + CRLF;
   return out;
 }
-
+ 
 function downloadICS(data, filename) {
   if (!data) return;
   const blob = new Blob([data], { type: 'text/calendar;charset=utf-8' });
@@ -576,7 +637,7 @@ function downloadICS(data, filename) {
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
-
+ 
 function showStatus(id, type, msg) {
   const el = document.getElementById(id);
   el.className = 'status ' + type; el.textContent = msg;
@@ -584,3 +645,4 @@ function showStatus(id, type, msg) {
 </script>
 </body>
 </html>
+ 
