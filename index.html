@@ -232,7 +232,7 @@ const SUBJECTS = {
   '-5': 'French',
   '-6': 'Spanish',
   '-7': 'German',
-  '-16': 'National Defense',
+  '-16': 'Kaasamõtlemine',
   '-18': 'Arts',
   '-21': 'Biology',
   '-22': 'Physics',
@@ -244,6 +244,8 @@ const SUBJECTS = {
   '-142': 'Music',
   '-144': 'History',
   '-155': 'Literature',
+  '-160': 'Estonian',
+  '-162': 'National Defense',
   '-174': 'Estonian',
   '-177': 'Media',
 };
@@ -406,6 +408,7 @@ function getClassroom(item) {
 }
 
 function getTeachers(item) {
+  if (item.subjectid === '-16') return '';
   if (!item.teacherids || item.teacherids.length === 0) return '';
   return item.teacherids.map(id => TEACHERS[id] || '').filter(Boolean).join(', ');
 }
