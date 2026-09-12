@@ -559,6 +559,25 @@ function renderPreview(items, previewId) {
     });
     preview.appendChild(group);
   }
+
+  // Which subject IDs turned up this week, and what we're calling them.
+  const ids = [...new Set(items.map(i => i.subjectid))].sort((a, b) => parseInt(b) - parseInt(a));
+  const det = document.createElement('details');
+  det.className = 'how-to';
+  det.innerHTML = '<summary>Subject IDs in this week</summary>';
+  const wrap = document.createElement('div');
+  wrap.className = 'how-to-content';
+  ids.forEach(id => {
+    const count = items.filter(i => i.subjectid === id).length;
+    const known = SUBJECTS[id];
+    const row = document.createElement('div');
+    row.className = 'hstep';
+    row.innerHTML = '<span class="hstep-label">' + id + '</span>' +
+      '<span>' + (known ? known : 'not mapped') + ' · ' + count + (count === 1 ? ' lesson' : ' lessons') + '</span>';
+    wrap.appendChild(row);
+  });
+  det.appendChild(wrap);
+  preview.appendChild(det);
 }
 
 function toICSDate(dateStr, timeStr) {
